@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -26,6 +26,31 @@
       These events are fictional academic test fixtures.
       No personal information is collected and no real registration is available.
     </div>
+    <div class="card" id="selected-event" hidden>
+      <h2>Selected event</h2>
+      <p id="selected-event-name"></p>
+      <p><a id="event-details-link" href="index.html#events">View event details</a></p>
+    </div>
+    <script>
+      const slug = new URLSearchParams(window.location.search).get("event");
+      if (slug && /^[a-z0-9-]+$/.test(slug)) {
+        fetch("events/" + slug + ".html")
+          .then(response => {
+            if (!response.ok) throw new Error("Event not found");
+            return response.text();
+          })
+          .then(html => {
+            const doc = new DOMParser().parseFromString(html, "text/html");
+            const name = doc.querySelector("h1")?.textContent?.trim();
+            if (!name) return;
+            document.getElementById("selected-event-name").textContent = name;
+            document.getElementById("event-details-link").href =
+              "events/" + slug + ".html";
+            document.getElementById("selected-event").hidden = false;
+          })
+          .catch(() => {});
+      }
+    </script>
     <p><a class="btn" href="index.html">Back to events</a></p>
   </section>
 </div>
